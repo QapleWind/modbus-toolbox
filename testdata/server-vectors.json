@@ -1,0 +1,23 @@
+[
+ {"name":"holding big endian","pdu":"03000A0002","reply":"03041234ABCD"},
+ {"name":"input read only area","pdu":"04000A0002","reply":"04045678FFFF"},
+ {"name":"coil LSB packing","pdu":"01000A0009","reply":"01028501"},
+ {"name":"discrete input bits","pdu":"02000A0003","reply":"020106"},
+ {"name":"single coil","pdu":"05000BFF00","reply":"05000BFF00","area":"coils","address":11,"values":[1]},
+ {"name":"single register","pdu":"06000ABEEF","reply":"06000ABEEF","area":"holding","address":10,"values":[48879]},
+ {"name":"multiple coils","pdu":"0F000A000902AA01","reply":"0F000A0009","area":"coils","address":10,"values":[0,1,0,1,0,1,0,1,1]},
+ {"name":"multiple registers","pdu":"10000A0002040001FFFF","reply":"10000A0002","area":"holding","address":10,"values":[1,65535]},
+ {"name":"unsupported function","pdu":"11000A0001","reply":"9101"},
+ {"name":"short PDU","pdu":"03","reply":"8303"},
+ {"name":"extra read byte","pdu":"03000A0001FF","reply":"8303"},
+ {"name":"zero quantity","pdu":"03000A0000","reply":"8303"},
+ {"name":"read over protocol limit","pdu":"03000A007E","reply":"8303"},
+ {"name":"address below bank","pdu":"0300090001","reply":"8302"},
+ {"name":"address across bank end","pdu":"0300190002","reply":"8302"},
+ {"name":"invalid coil value","pdu":"05000A0001","reply":"8503"},
+ {"name":"single write past bank","pdu":"06001A0001","reply":"8602"},
+ {"name":"multi write malformed byte count","pdu":"10000A0002040001000200","reply":"9003","area":"holding","address":10,"values":[4660,43981]},
+ {"name":"multi write outside bank is atomic","pdu":"10001900020400010002","reply":"9002","area":"holding","address":25,"values":[0]},
+ {"name":"coil quantity limit","pdu":"0F000A07B10200","reply":"8F03"},
+ {"name":"wrong unit has no response","unit":2,"pdu":"06000A0001","reply":null,"area":"holding","address":10,"values":[4660]}
+]

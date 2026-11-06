@@ -1,0 +1,117 @@
+{
+  "name": "modbus-local-toolbox",
+  "version": "1.9.2-preview.1",
+  "private": true,
+  "description": "Modbus RTU/TCP debugging and protocol tools",
+  "author": "Modbus Toolbox contributors",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "test": "node --test protocol.test.cjs suite.test.cjs modbus-points.test.cjs debug-model.test.cjs electron/desktop.test.cjs electron/serial-picker.test.cjs device-client.test.cjs electron/modbus-server.test.cjs",
+    "postinstall": "node node_modules/electron/install.js",
+    "start": "electron .",
+    "start:web": "python3 start.py --no-browser",
+    "pack": "electron-builder --dir --publish never",
+    "dist:mac": "electron-builder --mac dmg zip --arm64 --config.electronDist=node_modules/electron/dist --publish never",
+    "dist:win": "electron-builder --win nsis zip --x64 --publish never",
+    "test:tcp": "node --test electron/tcp-bridge.test.cjs"
+  },
+  "devDependencies": {
+    "electron": "44.8.0",
+    "electron-builder": "26.15.3"
+  },
+  "build": {
+    "appId": "local.modbus.toolbox",
+    "productName": "Modbus Toolbox",
+    "toolsets": {
+      "nsis": "1.2.1"
+    },
+    "directories": {
+      "output": "dist",
+      "buildResources": "assets"
+    },
+    "artifactName": "Modbus-Toolbox-${version}-${os}-${arch}.${ext}",
+    "files": [
+      "index.html",
+      "styles.css",
+      "protocol.js",
+      "transports.js",
+      "app.js",
+      "suite.js",
+      "serial.js",
+      "desktop.js",
+      "electron/*.cjs",
+      "!electron/*.test.cjs",
+      "assets/icon.*",
+      "package.json",
+      "debug-model.js",
+      "device-client.js",
+      "raw-serial.js",
+      "modbus-points.js",
+      "modbus-server.js",
+      "modbus-server.css",
+      "LICENSE",
+      "THIRD_PARTY_NOTICES.md",
+      "licenses/Electron-LICENSE"
+    ],
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "icon": "assets/icon.icns",
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "identity": "-",
+      "hardenedRuntime": true,
+      "entitlements": "assets/entitlements.mac.plist",
+      "entitlementsInherit": "assets/entitlements.mac.plist"
+    },
+    "dmg": {
+      "title": "Modbus Toolbox",
+      "contents": [
+        {
+          "x": 130,
+          "y": 180
+        },
+        {
+          "x": 410,
+          "y": 180,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "win": {
+      "icon": "assets/icon.ico",
+      "target": [
+        "nsis",
+        "zip"
+      ],
+      "signExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "language": "2052",
+      "installerLanguages": [
+        "zh_CN",
+        "en_US"
+      ],
+      "displayLanguageSelector": false,
+      "shortcutName": "Modbus 工具箱"
+    },
+    "linux": {
+      "icon": "assets/icon.png",
+      "target": [
+        "AppImage"
+      ],
+      "category": "Development"
+    },
+    "npmRebuild": false
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

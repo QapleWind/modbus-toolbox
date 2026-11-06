@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Modbus RTU/TCP 调试、请求与响应生成、报文解析、寄存器转换和 CRC-16 校验。">
+  <title>Modbus 工具箱</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%232563eb'/%3E%3Cpath d='M9 27V13l11 10 11-10v14' fill='none' stroke='white' stroke-width='3'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css?v=1.9.2-preview.1">
+  <script src="protocol.js?v=1.9.2-preview.1" defer></script>
+  <script src="transports.js?v=1.9.2-preview.1" defer></script>
+  <script src="modbus-points.js?v=1.9.2-preview.1" defer></script>
+  <script src="debug-model.js?v=1.9.2-preview.1" defer></script>
+  <script src="app.js?v=1.9.2-preview.1" defer></script>
+  <script src="suite.js?v=1.9.2-preview.1" defer></script>
+  <script src="desktop.js?v=1.9.2-preview.1" defer></script>
+  <script src="device-client.js?v=1.9.2-preview.1" defer></script>
+  <script src="serial.js?v=1.9.2-preview.1" defer></script>
+  <script src="raw-serial.js?v=1.9.2-preview.1" defer></script>
+  <link rel="stylesheet" href="modbus-server.css?v=1.9.2-preview.1">
+  <script src="modbus-server.js?v=1.9.2-preview.1" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="#top"><span class="brand-icon" aria-hidden="true">M</span> Modbus 工具箱</a>
+    </div>
+  </header>
+  <aside id="tool-sidebar" class="tool-sidebar" aria-label="全部工具"></aside>
+  <main id="top" class="page">
+    <div class="intro">
+      <div><h1>Modbus RTU 报文工具</h1><p>生成请求与响应，解析寄存器数据，校验每一个字节。</p></div>
+    </div>
+    <div id="protocol-view">
+    <nav class="tool-nav" aria-label="工具导航">
+      <a href="#request" class="active">请求生成</a><a href="#response">响应生成</a><a href="#parser">报文解析</a><a href="#crc">CRC 校验</a><a href="#guide">使用说明</a>
+    </nav>
+
+    <section id="request" class="card" aria-labelledby="request-title">
+      <div class="section-head"><h2 id="request-title"><span class="number">01</span> 请求报文生成</h2><div class="segmented" role="group" aria-label="请求输入进制"><label><input type="radio" name="request-base" value="16" checked><span>HEX</span></label><label><input type="radio" name="request-base" value="10"><span>DEC</span></label></div></div>
+      <div class="form-grid">
+        <label>设备地址<input id="request-slave" data-config="request.slave" value="01" autocomplete="off" spellcheck="false"><small>1–247，0 为广播</small></label>
+        <div class="function-field"><label for="request-fc">功能码</label><div class="function-control"><select id="request-fc" data-config="request.fc"></select><button id="request-custom" class="button subtle" type="button" aria-pressed="false">自定义</button></div></div>
+        <label id="request-start-wrap">起始地址<input id="request-start" data-config="request.start" value="0000" autocomplete="off" spellcheck="false"><small>从 0 开始的协议地址</small></label>
+        <label id="request-quantity-wrap">数量<input id="request-quantity" data-config="request.quantity" value="0002" autocomplete="off" spellcheck="false"><small id="request-quantity-help">寄存器个数</small></label>
+      </div>
+      <div id="request-extra"></div>
+      <p id="request-error" class="error" role="alert" hidden></p>
+      <div class="output-label"><span>生成的请求 <b id="request-length"></b></span><div class="actions"><button id="request-points" class="text-button" type="button">在 Modbus 调试中打开 ↗</button><button class="text-button" data-use="request" type="button">在解析器中打开 <span aria-hidden="true">↗</span></button></div></div>
+      <div class="output-row"><input id="request-output" class="mono output" aria-label="生成的请求" readonly><button class="button" data-copy="request-output" type="button">复制报文</button></div>
+      <div id="request-breakdown" class="breakdown" aria-label="请求字段"></div>
+    </section>
+
+    <section id="response" class="card" aria-labelledby="response-title">
+      <div class="section-head"><h2 id="response-title"><span class="number">02</span> 响应报文生成</h2><div class="segmented" role="group" aria-label="响应输入进制"><label><input type="radio" name="response-base" value="16" checked><span>HEX</span></label><label><input type="radio" name="response-base" value="10"><span>DEC</span></label></div></div>
+      <div class="form-grid response-grid">
+        <label>设备地址<input id="response-slave" data-config="response.slave" value="01" autocomplete="off" spellcheck="false"></label>
+        <div class="function-field"><label for="response-fc">功能码</label><div class="function-control"><select id="response-fc" data-config="response.fc"></select><button id="response-custom" class="button subtle" type="button" aria-pressed="false">自定义</button></div></div>
+        <label id="response-mode-wrap">响应类型<select id="response-mode"><option value="normal">正常响应</option><option value="exception">异常响应</option></select></label>
+      </div>
+      <div id="response-extra"></div>
+      <p id="response-error" class="error" role="alert" hidden></p>
+      <div class="output-label"><span>生成的响应 <b id="response-length"></b></span><button class="text-button" data-use="response" type="button">在解析器中打开 <span aria-hidden="true">↗</span></button></div>
+      <div class="output-row"><input id="response-output" class="mono output" aria-label="生成的响应" readonly><button class="button" data-copy="response-output" type="button">复制报文</button></div>
+      <div id="response-breakdown" class="breakdown" aria-label="响应字段"></div>
+    </section>
+
+    <section id="parser" class="card" aria-labelledby="parser-title">
+      <div class="section-head"><h2 id="parser-title"><span class="number">03</span> 报文解析</h2><span class="section-note">完整 RTU 帧，包含 CRC</span></div>
+      <label for="frame-input">报文数据</label>
+      <textarea id="frame-input" class="mono" rows="3" spellcheck="false" placeholder="粘贴十六进制报文，例如 01 03 04 00 01 00 02 2A 32"></textarea>
+      <div class="parser-toolbar">
+        <div class="actions"><button id="parse" class="button primary" type="button">解析报文</button><button id="clear" class="button" type="button">清除</button></div>
+        <label class="inline-label">解析方向<select id="parse-direction"><option value="auto">自动识别</option><option value="request">请求</option><option value="response">响应</option></select></label>
+      </div>
+      <p id="parse-error" class="error" role="alert" hidden></p>
+      <div id="parse-result" aria-live="polite"><div class="empty-state"><span class="empty-icon" aria-hidden="true">{ }</span><span>粘贴报文，查看字段与 CRC 校验结果</span><small>支持带空格、连续十六进制或 0x 前缀的字节</small></div></div>
+      <div class="rules-head"><div><h3>数据解析规则</h3><p>偏移从数据区的第 0 字节开始，同时比较四种字节序。</p></div><button id="add-rule" class="button subtle" type="button">＋ 添加规则</button></div>
+      <div class="table-scroll"><table class="rules-table"><thead><tr><th>字节偏移</th><th>数据类型</th><th>原始字节</th><th>字节序</th><th>重排字节</th><th>解析结果</th><th><span class="sr-only">操作</span></th></tr></thead><tbody id="rules-body"></tbody></table></div>
+    </section>
+
+    <section id="crc" class="card" aria-labelledby="crc-title">
+      <div class="section-head"><h2 id="crc-title"><span class="number">04</span> CRC-16 校验计算</h2><span class="section-note">MODBUS · 0xA001 · 初始值 0xFFFF</span></div>
+      <div class="crc-grid"><label>报文数据（不含 CRC）<input id="crc-input" class="mono" placeholder="01 03 00 00 00 02" spellcheck="false" autocomplete="off"></label><label>CRC（低字节在前）<input id="crc-output" class="mono output" value="FF FF" readonly></label><button class="button" data-copy="crc-output" type="button">复制 CRC</button></div>
+      <p id="crc-error" class="error" role="alert" hidden></p>
+      <div id="crc-detail" class="crc-detail">输入报文数据，实时计算校验码。</div>
+    </section>
+
+    <section id="guide" class="card guide" aria-labelledby="guide-title">
+      <div class="section-head"><h2 id="guide-title"><span class="number">?</span> 使用说明</h2><span class="section-note">快速参考</span></div>
+      <div class="guide-grid">
+        <div><h3>生成与解析</h3><ol><li>选择输入进制、设备地址与功能码。</li><li>填写起始地址和数量；写多个点时输入对应数值。</li><li>复制生成的报文，或直接送入解析器。</li><li>按设备寄存器表添加偏移和数据类型，比较字节序。</li></ol><p>HEX / DEC 只改变地址、数量和单寄存器值的输入进制。带类型的寄存器数值始终使用十进制，原始数据始终使用十六进制。</p></div>
+        <div><h3>字节序</h3><dl class="order-guide"><dt>ABCD</dt><dd>保持原始字节顺序</dd><dt>DCBA</dt><dd>将整个数值的字节反转</dd><dt>BADC</dt><dd>交换每个 16 位字内的两个字节</dd><dt>CDAB</dt><dd>每 4 字节交换两个 16 位字；64 位数分两组处理</dd></dl><p>CRC 按低字节、高字节的顺序附在报文末尾。起始地址使用协议偏移，例如手册中的 40001 通常对应地址 0，请以设备说明为准。</p></div>
+      </div>
+      <details><summary>功能码与数据类型</summary><div class="guide-grid"><div><p><code>01 / 02</code> 读取线圈 / 离散输入（1–2000 位）</p><p><code>03 / 04</code> 读取保持 / 输入寄存器（1–125 个）</p><p><code>05 / 06</code> 写单个线圈 / 寄存器</p><p><code>0F / 10</code> 写多个线圈（1–1968 位）/ 寄存器（1–123 个）</p></div><div><p><code>UINT16 / INT16</code> 2 字节，1 个寄存器</p><p><code>UINT32 / INT32 / FLOAT32</code> 4 字节，2 个寄存器</p><p><code>UINT64 / INT64 / FLOAT64</code> 8 字节，4 个寄存器</p><p>64 位整数使用 BigInt 精确处理；浮点数按 IEEE 754 编码。</p></div></div></details>
+      <p class="guide-foot">设备连接、读写和点标记请使用“Modbus 调试”。<a href="https://www.modbus.org/modbus-specifications" target="_blank" rel="noreferrer">Modbus 官方协议规范 ↗</a></p>
+    </section>
+    </div>
+    <div id="extras-view" hidden></div>
+  </main>
+  <div id="toast" class="toast" role="status" hidden></div>
+</body>
+</html>
